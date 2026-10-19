@@ -1,0 +1,58 @@
+/* App shell, header, file panel, summary tiles, settings form. */
+#app { max-width: 900px; margin: 0 auto; }
+.app-header {
+  position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--gap);
+  padding: 8px var(--pad); padding-top: max(8px, env(safe-area-inset-top)); min-height: 56px;
+}
+.hdr-main { display: flex; flex-direction: column; min-width: 0; }
+.hdr-title { font-size: var(--fs-base); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdr-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdr-status { flex: none; font-weight: 700; }
+
+.file-full { display: flex; flex-direction: column; gap: var(--gap); }
+.file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.file-input:focus-visible + .btn, .file-pick:focus-within { outline: 3px solid var(--focus); }
+.file-pick { min-height: 72px; font-size: var(--fs-large); text-align: center; padding: 8px 18px; }
+.progress { position: relative; height: var(--tap); border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.progress-bar { height: 100%; width: 0; background: var(--accent); opacity: .45; transition: width .15s; }
+.progress-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.file-error { padding: 10px 12px; border: 2px solid var(--bad); border-radius: var(--radius); margin: 0; font-weight: 600; }
+.file-compact { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); }
+.file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; min-width: 0; }
+.file-compact .btn { flex: none; }
+.file-full p { margin: 0; }
+#p-file:has(.file-compact:not([hidden])) { padding-top: 8px; padding-bottom: 8px; }
+#p-file:has(.file-compact:not([hidden])) > h2 { display: none; }
+
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
+@media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tile {
+  display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 10px 12px;
+  border: 2px solid var(--border); border-radius: var(--radius); text-align: left; font: inherit;
+  overflow-wrap: anywhere;
+}
+button.tile { cursor: pointer; min-height: var(--tap); }
+.tile-label { font-size: var(--fs-small); font-weight: 600; line-height: 1.2; }
+.tile-cue { border: 1.5px solid currentColor; border-radius: 6px; padding: 0 5px; margin-left: 2px; font-size: 13px; white-space: nowrap; }
+.tile-value { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.tile-num { font-size: var(--fs-xl); font-weight: 700; line-height: 1.1; }
+.tile-unit { font-size: var(--fs-small); font-weight: 600; }
+.tile-sub { line-height: 1.3; opacity: .95; }
+.tile.status-none { background: var(--surface); }
+.notes { margin: var(--gap) 0 0; padding-left: 20px; }
+
+.settings-form { display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field > label { font-weight: 600; }
+.field-row { display: flex; align-items: center; gap: 8px; }
+.field input {
+  flex: 1; min-width: 0; min-height: var(--tap); padding: 0 12px; font: 600 var(--fs-base) var(--font-num);
+  background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: var(--radius);
+}
+.field .unit { width: 3.5ch; flex: none; color: var(--text-muted); font-weight: 600; }
+.field-err { padding: 4px 8px; border-radius: 8px; font-size: var(--fs-small); font-weight: 600; }
+.settings-actions { display: flex; flex-wrap: wrap; gap: var(--gap); }
+.settings-actions .btn { flex: 1 1 140px; }
+.settings-msg { min-height: 1.4em; margin: 0; }
+.file-full[hidden], .file-compact[hidden], .progress[hidden], .field-err[hidden] { display: none !important; }
