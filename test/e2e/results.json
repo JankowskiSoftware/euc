@@ -1,0 +1,307 @@
+{
+ "themes": {
+  "light": {
+   "ids": [
+    "p-file",
+    "p-summary",
+    "p-timeline",
+    "p-margin",
+    "p-events",
+    "p-current",
+    "p-impacts",
+    "p-map",
+    "p-battery",
+    "p-settings"
+   ],
+   "bag": {
+    "errors": [],
+    "console": [],
+    "requests": [
+     "https://c.tile.openstreetmap.org/15/17941/10948.png",
+     "https://a.tile.openstreetmap.org/15/17942/10948.png",
+     "https://b.tile.openstreetmap.org/15/17941/10947.png",
+     "https://c.tile.openstreetmap.org/15/17942/10947.png",
+     "https://a.tile.openstreetmap.org/15/17941/10949.png",
+     "https://b.tile.openstreetmap.org/15/17942/10949.png",
+     "https://b.tile.openstreetmap.org/15/17938/10950.png",
+     "https://c.tile.openstreetmap.org/15/17938/10951.png",
+     "https://a.tile.openstreetmap.org/15/17937/10950.png",
+     "https://c.tile.openstreetmap.org/15/17939/10950.png",
+     "https://b.tile.openstreetmap.org/15/17937/10951.png",
+     "https://a.tile.openstreetmap.org/15/17939/10951.png",
+     "https://b.tile.openstreetmap.org/12/2242/1368.png",
+     "https://c.tile.openstreetmap.org/12/2242/1369.png",
+     "https://a.tile.openstreetmap.org/12/2241/1368.png",
+     "https://c.tile.openstreetmap.org/12/2243/1368.png",
+     "https://b.tile.openstreetmap.org/12/2241/1369.png",
+     "https://a.tile.openstreetmap.org/12/2243/1369.png"
+    ]
+   },
+   "audit": {
+    "hscroll": 0,
+    "overflow": [
+     {
+      "s": "#app-header span.hdr-sub.small.muted",
+      "sw": 328,
+      "cw": 320
+     },
+     {
+      "s": "#p-file span.file-name",
+      "sw": 299,
+      "cw": 238
+     },
+     {
+      "s": "#p-map div.e-map.leaflet-container.leaflet-touch.leaflet-retina.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom",
+      "sw": 628,
+      "cw": 378
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": -123,
+      "r": 133
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": 389,
+      "r": 645
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": -123,
+      "r": 133
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": 389,
+      "r": 645
+     }
+    ],
+    "small": [
+     {
+      "s": "#p-map a.leaflet-control-zoom-in",
+      "w": 30,
+      "h": 30,
+      "t": "+"
+     },
+     {
+      "s": "#p-map a.leaflet-control-zoom-out",
+      "w": 30,
+      "h": 30,
+      "t": "−"
+     },
+     {
+      "s": "#p-map a",
+      "w": 54,
+      "h": 15,
+      "t": "Leaflet"
+     }
+    ],
+    "contrast": []
+   },
+   "texts": {
+    "p-file": "Przykład (Lynx S, 2026-10-19).csv\nZmień plik",
+    "p-summary": "Podsumowanie\nDystans (koło)\n10,50\nkm\nGPS: 9,87 km\nCzas jazdy\n22:56\ncały log: 25:47\nVmax (koło)\n53,2\nkm/h\nrealna: 48,9 km/h\nGPS: 47,6 km/h\nMin. zapas OK\n48\n%\n12:44:13, 52 km/h\ndotknij: pokaż na wykresie\nNajmocniejsze hamowanie\n0,23\ng\nszczyt co najmniej 0,30 g\n12:43:03, 37 → 13 km/h\nNajmocniejsze przyspieszenie\n0,22\ng\nszczyt co najmniej 0,27 g\n12:51:33, 8 → 22 km/h\nPrąd fazowy\n85\nA\nmax; min: −109 A\nPrąd baterii\n45\nA\nmax; min (regeneracja): −23 A\nEnergia\n330\nWh\n31,4 Wh/km\nBateria OK\n67 → 53\n%\nmin. pod obciążeniem: 51 %\nNapięcie min. OK\n125,5\nV\n12:49:24; max 139,1 V\nTemperatura max OK\n36\n°C\npłyta 29, bat. 21, CPU 36, IMU 36\nAlarmy ALARM\n11\nAlarm prędkości 3: 8\nMargines bezpieczeństwa: 1\nLimit prędkości: 2\nKalibracja prędkości k\n1,089\nauto; licznik zawyża o 8,9 %\nZnaczniki\n0\nprzycisk w aplikacji",
+    "p-timeline": "Przebieg\nPrzesuwanie wykresu\nPokaż całość\n\nDotknij wykresu, aby zobaczyć wartości w wybranej chwili.\n\nBrak znaczników w tym logu.\n\nZamknij",
+    "p-margin": "Zapas vs prędkość\nModel zapasu\n\nPWM = a·(prędkość/U)·100 + b·(Iph/U)·100 + c\n\na = 1,195, b = 0,217, c = −0,35. Odchylenie reszt 2,07 pkt %, r² = 0,954, próbek: 2630.\n\nPrzy napięciu spoczynkowym 134,5 V (mediana) i prądzie 40 A tiltback (PWM 65 %) wypada przy ok. 63,9 km/h wg koła (58,7 km/h rzeczywistych).\n\nPrędkość tiltbacku: ekstrapolacja modelu\nU spocz. \\ Iph\t10 A\t40 A\t80 A\n151,2 V\t80 / 74\t73 / 67\t63 / 58\n134,5 V\t71 / 65\t64 / 59\t54 / 50\n126,0 V\t66 / 61\t59 / 54\t50 / 46\n\nKomórki: km/h wg koła / rzeczywiste. To ekstrapolacja modelu poza zakres zarejestrowanych prędkości, nie pomiar.",
+    "p-events": "Hamowania i przyspieszenia\nHamowania\nPrzyspieszenia\nWszystkie\nPorównaj\n1\nHamowanie 12:43:03\n37→13 km/h · 0,23 g · 3,0 s\nszczyt co najmniej 0,30 g\n2\nHamowanie 12:59:06\n41→22 km/h · 0,23 g · 2,4 s\nszczyt co najmniej 0,31 g\n3\nHamowanie 12:49:29\n41→21 km/h · 0,22 g · 2,4 s\nszczyt co najmniej 0,27 g\n4\nHamowanie 12:43:57\n41→28 km/h · 0,22 g · 1,8 s\nszczyt co najmniej 0,25 g\n5\nHamowanie 12:38:37\n34→20 km/h · 0,21 g · 1,8 s\nszczyt co najmniej 0,36 g\n6\nHamowanie 12:42:45\n38→24 km/h · 0,21 g · 1,9 s\nszczyt co najmniej 0,22 g\n7\nHamowanie 12:54:46\n38→15 km/h · 0,21 g · 3,1 s\nszczyt co najmniej 0,26 g\n8\nHamowanie 12:36:20\n36→23 km/h · 0,20 g · 1,8 s\nszczyt co najmniej 0,26 g\n9\nHamowanie 12:57:46\n41→19 km/h · 0,20 g · 3,0 s\nszczyt co najmniej 0,30 g\n10\nHamowanie 12:48:29\n30→17 km/h · 0,20 g · 1,8 s\nszczyt co najmniej 0,26 g\n11\nHamowanie 12:57:02\n34→18 km/h · 0,20 g · 2,4 s\nszczyt co najmniej 0,30 g\n12\nHamowanie 12:50:41\n20→12 km/h · 0,19 g · 1,2 s\nszczyt co najmniej 0,20 g\n13\nHamowanie 12:40:10\n31→19 km/h · 0,19 g · 1,8 s\nszczyt co najmniej 0,20 g\n14\nHamowanie 12:47:48\n28→12 km/h · 0,18 g · 2,4 s\nszczyt co najmniej 0,22 g\n15\nHamowanie 12:46:15\n34→24 km/h · 0,16 g · 1,8 s\nszczyt co najmniej 0,20 g\n\nWartości przyspieszenia to dolne oszacowanie (próbkowanie co ~0,6 s).",
+    "p-current": "Prąd vs prędkość\nModel prądu\n\nKażdy amper prądu fazowego daje k = 0,030 m/s² przyspieszenia (a = k·Iph + c + d·v², c = −0,25, d = −0,0031; odchylenie reszt 0,25 m/s², próbek: 2453).\n\nPrąd potrzebny do zadanego przyspieszenia przy 30 km/h (prędkość rzeczywista):\n\nPrzyspieszenie\tHamowanie, Iph\tPrzyspieszanie, Iph\n0,3 g\t−82 A\t+113 A\n0,4 g\t−114 A\t+145 A\n0,5 g\t−147 A\t+177 A\n\nKrzywe na wykresie: prąd fazowy potrzebny do 0,3 / 0,4 / 0,5 g, czerwone hamowanie, zielone przyspieszanie (ekstrapolacja modelu).",
+    "p-impacts": "Uderzenia\n\nTo kandydaci wywnioskowani ze skoków prądu i pochylenia – koło nie ma akcelerometru, więc nie jest to pewne wykrycie uderzenia.\n\n12:43:59,6\nPoziom 2: średni\nKoło: 31 km/h\nRzecz.: 28 km/h\nIph: −109 A\nOdchyl.: −86 A\nSkok pochyl.: 1,8 °\nZapas: 81 %\nPowód: skok prądu fazowego, skok pochylenia, niski zapas bezpieczeństwa\nPrzebieg\nMapa\n12:44:01,4\nPoziom 1: niski\nKoło: 22 km/h\nRzecz.: 20 km/h\nIph: −74 A\nOdchyl.: −67 A\nSkok pochyl.: 1,5 °\nZapas: 91 %\nPowód: skok prądu fazowego, skok pochylenia\nPrzebieg\nMapa\n12:44:37,7\nPoziom 1: niski\nKoło: 25 km/h\nRzecz.: 23 km/h\nIph: +83 A\nOdchyl.: +47 A\nSkok pochyl.: 1,7 °\nZapas: 70 %\nPowód: skok prądu fazowego, skok pochylenia\nPrzebieg\nMapa\n12:48:29,9\nPoziom 2: średni\nKoło: 30 km/h\nRzecz.: 28 km/h\nIph: −96 A\nOdchyl.: −81 A\nSkok pochyl.: 1,3 °\nZapas: 83 %\nPowód: skok prądu fazowego\nPrzebieg\nMapa\n12:52:36,5\nPoziom 1: niski\nKoło: 20 km/h\nRzecz.: 19 km/h\nIph: +78 A\nOdchyl.: +59 A\nSkok pochyl.: 1,7 °\nZapas: 72 %\nPowód: skok prądu fazowego, skok pochylenia, niski zapas bezpieczeństwa\nPrzebieg\nMapa\n12:55:51,7\nPoziom 2: średni\nKoło: 29 km/h\nRzecz.: 27 km/h\nIph: +85 A\nOdchyl.: +57 A\nSkok pochyl.: 1,5 °\nZapas: 65 %\nPowód: skok prądu fazowego, skok pochylenia\nPrzebieg\nMapa\n12:56:50,3\nPoziom 1: niski\nKoło: 10 km/h\nRzecz.: 9 km/h\nIph: +69 A\nOdchyl.: +58 A\nSkok pochyl.: 1,5 °\nZapas: 82 %\nPowód: skok prądu fazowego, skok pochylenia\nPrzebieg\nMapa",
+    "p-map": "Trasa\n+\n−\n Leaflet | © OpenStreetMap\nzapas OK\nzapas niski\nzapas krytyczny\nhamowanie\nprzyspieszenie\nuderzenie",
+    "p-battery": "Bateria\nNapięcie min\n125,5 V (15:41)\nNapięcie maks.\n139,1 V\nBateria start / koniec\n67 / 53 %\nBateria minimum\n51 % (25:22)\nNapięcie vs prąd baterii\n\nOpór dopasowany R = 151 mΩ, z pliku 170 mΩ; V0 = 136,8 V (V0 dryfuje wraz z poziomem naładowania, więc dopasowanie jest przybliżone).\n\nTemperatury",
+    "p-settings": "Ustawienia\nPróg tiltbacku (PWM)\n%\nPWM, przy którym koło odchyla siodełko.\nZapas: zielony powyżej\n%\nZapas bezpieczeństwa powyżej tej wartości = OK.\nZapas: czerwony poniżej\n%\nZapas poniżej tej wartości = alarm.\nPróg zdarzenia\ng\nHamowanie/przyspieszenie zaczyna się od tego przeciążenia.\nSzczyt zdarzenia\ng\nZdarzenie musi mieć próbkę co najmniej tak mocną.\nCzas reakcji\ns\nDodawany do drogi hamowania.\nUderzenie: skok prądu\nA\nOdchylenie prądu fazowego od mediany.\nUderzenie: skok nachylenia\n°\nZmiana nachylenia na próbkę.\nPrąd krzywych modelu\nA\nPrąd fazowy dla krzywych w panelu zapasu.\nNapięcie: ostrzeżenie\nV\nPoniżej = UWAGA.\nNapięcie: alarm\nV\nPoniżej = ALARM.\nTemperatura: ostrzeżenie\n°C\nPowyżej = UWAGA.\nTemperatura: alarm\n°C\nPowyżej = ALARM.\nBateria na końcu: ostrzeżenie\n%\nPoniżej = UWAGA.\nBateria na końcu: alarm\n%\nPoniżej = ALARM.\nKalibracja prędkości k\nPuste = automatycznie. Licznik / prędkość realna.\nZastosuj\nPrzywróć domyślne"
+   },
+   "canvasCount": 6
+  },
+  "dark": {
+   "ids": [
+    "p-file",
+    "p-summary",
+    "p-timeline",
+    "p-margin",
+    "p-events",
+    "p-current",
+    "p-impacts",
+    "p-map",
+    "p-battery",
+    "p-settings"
+   ],
+   "bag": {
+    "errors": [],
+    "console": [],
+    "requests": [
+     "https://c.tile.openstreetmap.org/15/17941/10948.png",
+     "https://a.tile.openstreetmap.org/15/17942/10948.png",
+     "https://b.tile.openstreetmap.org/15/17941/10947.png",
+     "https://c.tile.openstreetmap.org/15/17942/10947.png",
+     "https://a.tile.openstreetmap.org/15/17941/10949.png",
+     "https://b.tile.openstreetmap.org/15/17942/10949.png",
+     "https://b.tile.openstreetmap.org/15/17938/10950.png",
+     "https://c.tile.openstreetmap.org/15/17938/10951.png",
+     "https://a.tile.openstreetmap.org/15/17937/10950.png",
+     "https://c.tile.openstreetmap.org/15/17939/10950.png",
+     "https://b.tile.openstreetmap.org/15/17937/10951.png",
+     "https://a.tile.openstreetmap.org/15/17939/10951.png",
+     "https://b.tile.openstreetmap.org/12/2242/1368.png",
+     "https://c.tile.openstreetmap.org/12/2242/1369.png",
+     "https://a.tile.openstreetmap.org/12/2241/1368.png",
+     "https://c.tile.openstreetmap.org/12/2243/1368.png",
+     "https://b.tile.openstreetmap.org/12/2241/1369.png",
+     "https://a.tile.openstreetmap.org/12/2243/1369.png"
+    ]
+   },
+   "audit": {
+    "hscroll": 0,
+    "overflow": [
+     {
+      "s": "#app-header span.hdr-sub.small.muted",
+      "sw": 328,
+      "cw": 320
+     },
+     {
+      "s": "#p-file span.file-name",
+      "sw": 299,
+      "cw": 238
+     },
+     {
+      "s": "#p-map div.e-map.leaflet-container.leaflet-touch.leaflet-retina.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom",
+      "sw": 628,
+      "cw": 378
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": -123,
+      "r": 133
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": 389,
+      "r": 645
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": -123,
+      "r": 133
+     },
+     {
+      "s": "#p-map img.leaflet-tile.leaflet-tile-loaded",
+      "off": "viewport",
+      "l": 389,
+      "r": 645
+     }
+    ],
+    "small": [
+     {
+      "s": "#p-map a.leaflet-control-zoom-in",
+      "w": 30,
+      "h": 30,
+      "t": "+"
+     },
+     {
+      "s": "#p-map a.leaflet-control-zoom-out",
+      "w": 30,
+      "h": 30,
+      "t": "−"
+     },
+     {
+      "s": "#p-map a",
+      "w": 54,
+      "h": 15,
+      "t": "Leaflet"
+     }
+    ],
+    "contrast": [
+     {
+      "s": "#p-map a",
+      "ratio": 3.23,
+      "need": 4.5,
+      "px": 12,
+      "fg": "rgb(0, 120, 168)",
+      "txt": "Leaflet"
+     }
+    ]
+   },
+   "canvasCount": 6
+  }
+ },
+ "perf": {
+  "long": [
+   {
+    "ms": 3574,
+    "marks": 2874.899999999907,
+    "scrollErr": {
+     "errors": [],
+     "console": [],
+     "canvases": 6,
+     "empties": 1
+    }
+   },
+   {
+    "ms": 3348,
+    "marks": 2635.1999999999534,
+    "scrollErr": {
+     "errors": [],
+     "console": [],
+     "canvases": 6,
+     "empties": 1
+    }
+   },
+   {
+    "ms": 3705,
+    "marks": 3002.3000000000466,
+    "scrollErr": {
+     "errors": [],
+     "console": [],
+     "canvases": 6,
+     "empties": 1
+    }
+   }
+  ],
+  "sample": [
+   {
+    "ms": 1423,
+    "marks": 1096.8000000000466,
+    "scrollErr": null
+   }
+  ]
+ },
+ "interactions": {
+  "eventDetail": true,
+  "impactToTimeline": {
+   "top": 0,
+   "inView": true,
+   "txt": "Przebieg\nPrzesuwanie wykresu\nPokaż całość\nCzas\n12:43:59,6 (10:16)\nPrędkość koła\n30,9 km/h\nPrędkość rzecz.\n28,4 km/h\nZapas\n81,0 %\nPWM\n19,0 %\nPrąd fazowy\n−108,7 A\nPrąd baterii\n−17,9 A\nNapięcie\n137,6 V\nPrzysp.\n−0,15 g\nPochylenie\n1,8 °\nPrzechył\n−1,8 °\nBateria\n61 %\n\nBrak alarmów\n\nBrak znaczników w tym lo"
+  },
+  "timelineReadout": "Przebieg\nPrzesuwanie wykresu\nPokaż całość\nCzas\n12:44:00,8 (10:18)\nPrędkość koła\n21,5 km/h\nPrędkość rzecz.\n19,8 km/h\nZapas\n79,0 %\nPWM\n21,0 %\nPrąd fazowy\n12,6 A\nPrąd baterii\n3,3 A\nNapięcie\n135,0 V\nPrzysp.\n−0,03 g\nPochylenie\n−0,2 °\nPrzechył\n1,8 °\nBateria\n61 %\n\nBrak alarmów\n\nBrak znaczników w tym logu.\n\nZamknij",
+  "settings": {
+   "old": "1",
+   "after": "2,5"
+  }
+ },
+ "requests": [
+  "https://c.tile.openstreetmap.org/15/17941/10948.png",
+  "https://a.tile.openstreetmap.org/15/17942/10948.png",
+  "https://b.tile.openstreetmap.org/15/17941/10947.png",
+  "https://c.tile.openstreetmap.org/15/17942/10947.png",
+  "https://a.tile.openstreetmap.org/15/17941/10949.png",
+  "https://b.tile.openstreetmap.org/15/17942/10949.png",
+  "https://b.tile.openstreetmap.org/15/17938/10950.png",
+  "https://c.tile.openstreetmap.org/15/17938/10951.png",
+  "https://a.tile.openstreetmap.org/15/17937/10950.png",
+  "https://c.tile.openstreetmap.org/15/17939/10950.png",
+  "https://b.tile.openstreetmap.org/15/17937/10951.png",
+  "https://a.tile.openstreetmap.org/15/17939/10951.png",
+  "https://b.tile.openstreetmap.org/12/2242/1368.png",
+  "https://c.tile.openstreetmap.org/12/2242/1369.png",
+  "https://a.tile.openstreetmap.org/12/2241/1368.png",
+  "https://c.tile.openstreetmap.org/12/2243/1368.png",
+  "https://b.tile.openstreetmap.org/12/2241/1369.png",
+  "https://a.tile.openstreetmap.org/12/2243/1369.png"
+ ]
+}
