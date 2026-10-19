@@ -34,6 +34,16 @@ describe('timestamp parsing', () => {
     assert.equal(parseTimestamp('2026-01-02T03:04:05.5-05:30').ms, Date.UTC(2026, 0, 2, 8, 34, 5, 500));
     assert.equal(parseTimestamp('garbage'), null);
   });
+  test('comma fraction and missing zone', () => {
+    const p = parseTimestamp('2026-01-02T03:04:05,25+0100');
+    assert.equal(p.ms, Date.UTC(2026, 0, 2, 2, 4, 5, 250));
+    assert.equal(p.hasZone, true);
+    assert.equal(parseTimestamp('2026-01-02T03:04:05.5').hasZone, false);
+    const noZone = clone(ride);
+    noZone.startIso = '2026-10-19T12:33:43.219';
+    assert.ok(analyzeRide(noZone, SETTINGS).warnings.some((x) => x.includes('bez strefy czasowej')));
+    assert.ok(!A.warnings.some((x) => x.includes('bez strefy')));
+  });
 });
 
 describe('ingestion', () => {
@@ -90,6 +100,8 @@ describe('summary acceptance', () => {
     near(S.distanceGpsKm, 9.871, 0.001);
     near(S.energyWh, 330, 0.5);
     near(S.whPerKm, 31.4, 0.1);
+    near(S.whPerKmReal, S.energyWh / S.distanceGpsKm, 1e-9);
+    within(S.whPerKmReal, 33, 34);
     assert.equal(S.batteryStart, 67);
     // The log's last battery value is 53 % (at rest, voltage recovered); 51 % is the minimum, under load.
     assert.equal(S.batteryEnd, 53);
@@ -161,10 +173,13 @@ describe('models', () => {
       assert.equal(c.iph, SETTINGS.curveIph);
       assert.ok(c.points.length > 50);
       for (let j = 1; j < c.points.length; j++) assert.ok(c.points[j][1] < c.points[j - 1][1]);
-      // the curve crosses margin 35 % (PWM 65) at the predicted tiltback speed
+      // curves stop at min(90, ride max + 20) km/h; where the curve reaches margin 35 % (PWM 65)
+      // it does so at the predicted tiltback speed
+      assert.ok(c.points.at(-1)[0] <= Math.min(90, m.observedMax.speedWheel + 20));
       const pred = predictTiltbackSpeed(m, c.vRest, c.iph, 65, m.rOhm);
       const crossing = c.points.find((pt) => pt[1] <= 35);
-      near(crossing[0], pred, 1.01);
+      if (pred <= c.points.at(-1)[0]) near(crossing[0], pred, 1.01);
+      else assert.equal(crossing, undefined);
     }
     near(m.tiltbackSpeedAtMedian.speedWheel, predictTiltbackSpeed(m, m.vMedian, 40, 65, 0.17), 1e-9);
   });
@@ -178,6 +193,78 @@ describe('models', () => {
     near(iphForG(b, -0.5, 30), half.brakeIph, 1e-9);
     assert.deepEqual(b.currentFor.map((x) => x.g), [0.3, 0.4, 0.5]);
   });
+  test('margin model: rest voltage, bands, data range, worst case', () => {
+    // vRestMedian from |Ib| < 3 A samples; vMedian kept as the same value
+    within(m.vRestMedian, 130, 140, 'vRestMedian');
+    assert.equal(m.vMedian, m.vRestMedian);
+    const w = ride.wheel;
+    const rest = [];
+    for (let i = 0; i < w.n; i++) if (Math.abs(w.current[i]) < 3 && w.voltage[i] > 0) rest.push(w.voltage[i]);
+    rest.sort((x, y) => x - y);
+    const h = rest.length >> 1;
+    assert.ok(rest.length >= 20);
+    near(m.vRestMedian, rest.length % 2 ? rest[h] : (rest[h - 1] + rest[h]) / 2, 1e-9);
+    near(m.observedMax.speedWheel, 53.2, 1e-9);
+    assert.equal(m.observedMax.pwm, 52);
+    for (const p of m.predictions) {
+      assert.equal(p.outOfData, p.speedWheel > 53.2 * 1.05);
+      assert.ok(p.band[0] < p.speedWheel && p.speedWheel < p.band[1]);
+      near(p.band[0], predictTiltbackSpeed(m, p.vRest, p.iph, 65 - m.residSd, m.rOhm), 1e-9);
+      near(p.band[1], predictTiltbackSpeed(m, p.vRest, p.iph, 65 + m.residSd, m.rOhm), 1e-9);
+    }
+    assert.ok(m.predictions.some((p) => p.outOfData) && m.predictions.some((p) => !p.outOfData));
+    const minP = Math.min(...m.predictions.map((p) => p.speedWheel));
+    assert.equal(m.worstCase.speedWheel, minP);
+    assert.equal(m.worstCase.vRest, 126);
+    assert.equal(m.worstCase.iph, 80);
+    near(m.worstCase.speedReal, minP / A.calib.k, 1e-9);
+    within(minP, 45, 53.2, 'worst case below the observed max');
+  });
+  test('quality gates hide weak models', () => {
+    const short = clone(ride);
+    const keep = 150;
+    for (const key of Object.keys(short.wheel)) if (Array.isArray(short.wheel[key])) short.wheel[key] = short.wheel[key].slice(500, 500 + keep);
+    short.wheel.n = keep;
+    const b = analyzeRide(short, SETTINGS);
+    assert.equal(b.marginModel, null);
+    assert.ok(b.warnings.some((x) => x.startsWith('Model marginesu ukryty') || x.startsWith('Za mało danych do modelu marginesu')));
+    // noisy margin column => r² below 0.6
+    const noisy = clone(ride);
+    noisy.wheel.safetyMargin = noisy.wheel.safetyMargin.map((x, i) => (Number.isFinite(x) ? ((i * 7919) % 97) : x));
+    const c = analyzeRide(noisy, SETTINGS);
+    assert.equal(c.marginModel, null);
+    assert.ok(c.warnings.some((x) => x.startsWith('Model marginesu ukryty')));
+    // shuffled phase current => brake fit r² collapses
+    const shuffled = clone(ride);
+    shuffled.wheel.currentPhase = shuffled.wheel.currentPhase.map((_, i, arr) => arr[(i * 7919) % arr.length]);
+    const d = analyzeRide(shuffled, SETTINGS);
+    assert.equal(d.brakeModel, null);
+    assert.ok(d.warnings.some((x) => x.startsWith('Model hamowania ukryty') || x.startsWith('Za mało danych do modelu siły')));
+  });
+  test('brake model: observed range and beyondObserved', () => {
+    const b = A.brakeModel;
+    near(b.observedMinIph, -108.7, 1e-9);
+    within(b.observedPeakBrakeG, 0.28, 0.34, 'observed peak decel');
+    assert.ok(b.r2 > 0.8);
+    for (const row of b.currentFor) {
+      assert.equal(row.beyondObserved, Math.abs(row.brakeIph) > 108.7 || row.g > b.observedPeakBrakeG);
+    }
+    assert.deepEqual(b.currentFor.map((x) => x.beyondObserved), [false, true, true]);
+  });
+  test('battery R quality gate', () => {
+    const bad = clone(ride);
+    bad.wheel.voltage = bad.wheel.voltage.map((v, i) => v + ((i * 7919) % 13) - 6);
+    const b = analyzeRide(bad, SETTINGS);
+    assert.equal(b.batteryModel, null);
+    assert.ok(b.warnings.some((x) => x.startsWith('Model oporu baterii odrzucony')));
+  });
+  test('full-pack regen flag', () => {
+    const full = clone(ride);
+    full.wheel.voltage = full.wheel.voltage.map((v) => v + 12);   // start ~151 V
+    const f = analyzeRide(full, SETTINGS).battery.flags;
+    assert.ok(f.some((x) => x.includes('Prawie pełna bateria') && x.includes('przepięcie')), f.join('|'));
+    assert.ok(!A.battery.flags.some((x) => x.includes('Prawie pełna')));
+  });
   test('battery model and flags', () => {
     const bm = A.batteryModel;
     within(bm.r, 0.08, 0.25, 'R');
@@ -188,7 +275,9 @@ describe('models', () => {
     hot.wheel.voltage = hot.wheel.voltage.map((v) => v - 10);
     hot.wheel.battery = hot.wheel.battery.map(() => 10);
     hot.wheel.tempBatt = hot.wheel.tempBatt.map(() => 61);
-    assert.ok(analyzeRide(hot, SETTINGS).battery.flags.length >= 3);
+    const hf = analyzeRide(hot, SETTINGS).battery.flags;
+    assert.ok(hf.length >= 3);
+    assert.ok(hf.some((x) => x.startsWith('Napięcie pod obciążeniem spadło do')));
   });
 });
 
@@ -210,6 +299,9 @@ describe('events', () => {
       near(e.stop.reactionM, (e.vStart / 3.6) * SETTINGS.reactionTime, 1e-9);
       near(e.stop.brakingM, (e.vStart / 3.6) ** 2 / (2 * e.meanG * 9.81), 1e-6);
       near(e.stop.totalM, e.stop.brakingM + e.stop.reactionM, 1e-9);
+      near(e.stop.speedShedFraction, 1 - e.vEnd / e.vStart, 1e-12);
+      within(e.stop.speedShedFraction, 0.25, 0.6, 'shed fraction');
+      assert.equal(e.stop.extrapolated, true);   // none of the sample brakes ends at a stop
     }
   });
   test('event fields and invariants', () => {
@@ -227,6 +319,14 @@ describe('events', () => {
     });
     const hardest = A.events.find((e) => e.id === S.hardestBrakeId);
     assert.ok(brakes.every((e) => e.meanG <= hardest.meanG));
+  });
+  test('acceleration stencil spans at least ~1 s (no partial-update spikes)', () => {
+    let peak = 0;
+    for (const g of A.derived.accelG) if (g === g) peak = Math.max(peak, Math.abs(g));
+    within(peak, 0.28, 0.33, 'ride peak |g|');   // central difference over 0,4 s gave 0,36 g
+    const e2 = A.events.find((e) => Math.abs(e.tStart - 295) < 3);
+    assert.ok(e2 && e2.peakG < 0.3, 'event at ~295 s no longer inflated');
+    for (const e of brakes) if (e.stop.extrapolated === false) assert.ok(e.vEnd <= 5);
   });
   test('stricter thresholds give fewer events', () => {
     const b = analyzeRide(ride, { ...SETTINGS, eventG: 0.2, eventPeakG: 0.25 });
@@ -264,9 +364,22 @@ describe('calibration options', () => {
   test('no GPS => k = 1 with a warning', () => {
     const noGps = clone(ride);
     noGps.gps = { n: 0, t: [], lat: [], lon: [], speed: [], alt: [], bearing: [], acc: [], distance: [] };
+    noGps.last.gpsDistanceKm = NaN;
     const b = analyzeRide(noGps, SETTINGS);
     assert.equal(b.calib.k, 1);
-    assert.ok(b.warnings.length > 0);
+    assert.ok(b.warnings.some((x) => x.includes('k = 1') && x.includes('zawyżone')));
+    near(b.summary.whPerKmReal, S.energyWh / S.distanceWheelKm, 1e-9);  // no GPS distance, k = 1
+  });
+});
+
+describe('caveats', () => {
+  test('Polish caveat strings for the UI', () => {
+    const keys = ['tiltback', 'accel', 'stopping', 'brakeCurrent', 'impacts'];
+    assert.deepEqual(Object.keys(A.caveats), keys);
+    for (const k of keys) assert.ok(typeof A.caveats[k] === 'string' && A.caveats[k].length > 20, k);
+    assert.ok(A.caveats.tiltback.includes('53 km/h') && A.caveats.tiltback.includes('PWM 52 %'));
+    assert.ok(A.caveats.brakeCurrent.includes('−109 A') && A.caveats.brakeCurrent.includes('przyczepności'));
+    assert.ok(A.caveats.stopping.includes('projekcja'));
   });
 });
 

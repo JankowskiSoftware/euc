@@ -2,12 +2,14 @@
 //
 // Boundary choice (documented in the contract summary): the "core" of an event is a run of samples
 // whose |accelG| >= eventG with the same sign (runs separated by a sub-threshold stretch shorter than
-// eventMergeGap are merged). Because accelG[i] is a central difference over [i-1, i+1], the speed
+// eventMergeGap are merged). Because accelG[i] is a difference over a stencil around i (≥ 1 s), the speed
 // change actually starts at the sample BEFORE the first core sample and ends at the sample AFTER the
 // last one; i0/i1 are those extended indices (never across a data gap). The minimum-duration test
 // uses the core length counted in sample intervals ((t[last]-t[first]) + typical spacing), so a single
 // above-threshold sample (~0.6 s) never forms an event. meanG = |v(i1)-v(i0)| / (t(i1)-t(i0)) / g.
 import { G, MAX_NEIGHBOUR_GAP } from './kinematics.mjs';
+
+export const STOP_SPEED = 5; // km/h real; a brake ending above this did not reach a stop
 
 function typicalSpacing(t) {
   const d = [];
@@ -102,7 +104,9 @@ function buildEvent(w, vr, accelG, i0, i1, kind, s) {
     const a = meanG * G;
     const brakingM = a > 0 ? (v * v) / (2 * a) : NaN;
     const reactionM = v * s.reactionTime;
-    stop = { brakingM, reactionM, totalM: brakingM + reactionM };
+    // projection to zero speed at the event's mean intensity; extrapolated when the event did not end near a stop
+    stop = { brakingM, reactionM, totalM: brakingM + reactionM,
+      speedShedFraction: vStart > 0 ? 1 - vEnd / vStart : NaN, extrapolated: !(vEnd <= STOP_SPEED) };
   }
   return {
     id: 0, kind, i0, i1,

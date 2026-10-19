@@ -86,13 +86,16 @@ type RideEvent = {
   vStart: number; vEnd: number;           // real km/h
   vStartWheel: number; vEndWheel: number; // wheel km/h
   meanG: number;                          // |Δv/Δt| / 9.81 over [i0,i1] incl. one sample before/after, positive
-  peakG: number;                          // max |accelG| in event, positive (lower bound)
+  peakG: number;                          // max |accelG| in event, positive; steepest ≥1 s stretch (approximate, not a bound)
   distanceM: number;
   peakIph: number;                        // signed extreme in the event's direction
   minMargin: number; maxMargin: number;
   peakRegenI: number|null;                // most negative battery current (brake only)
   maxVoltage: number;
-  stop: { brakingM: number; reactionM: number; totalM: number } | null;  // brake only: v²/(2a) and v·reactionTime from vStart
+  stop: { brakingM: number; reactionM: number; totalM: number;   // brake only: v²/(2a) and v·reactionTime from vStart
+          speedShedFraction: number;        // 1 − vEnd/vStart
+          extrapolated: boolean;            // vEnd > 5 km/h: brakingM projects beyond what was measured
+        } | null;
   lat: number; lon: number;
 };
 
@@ -100,19 +103,29 @@ type MarginModel = {
   a: number; b: number; c: number;        // PWM = a·(speed/V)·100 + b·(Iph/V)·100 + c
   residSd: number; n: number; r2: number;
   rOhm: number;                           // used for sag (meta or 0.17 fallback)
-  vMedian: number;
-  predictions: { vRest: number; iph: number; speedWheel: number; speedReal: number }[];  // 3 vRest × 3 iph
-  curves: { vRest: number; iph: number; points: [number, number][] }[];  // [wheel km/h, safety margin %] 0..90 km/h, iph = settings.curveIph
-  tiltbackSpeedAtMedian: { speedWheel: number; speedReal: number };     // vRest = vMedian, iph = curveIph
+  vMedian: number;                        // = vRestMedian (kept for older consumers)
+  vRestMedian: number;                    // median voltage of near-rest samples (|Ib| < 3 A)
+  observedMax: { speedWheel: number; pwm: number };   // ride max wheel speed and max PWM
+  predictions: { vRest: number; iph: number; speedWheel: number; speedReal: number;  // vRest = [151.2, vRestMedian, 126] × iph [10, 40, 80]
+                 outOfData: boolean;      // speedWheel > 1.05 × observedMax.speedWheel
+                 band: [number, number];  // wheel km/h at PWM target − residSd, + residSd
+               }[];
+  worstCase: { vRest: number; iph: number; speedWheel: number; speedReal: number };  // lowest prediction of the grid
+  curves: { vRest: number; iph: number; points: [number, number][] }[];  // [wheel km/h, safety margin %] 0..min(90, observedMax.speedWheel + 20), iph = settings.curveIph
+  tiltbackSpeedAtMedian: { speedWheel: number; speedReal: number };     // vRest = vRestMedian, iph = curveIph
   extrapolated: true;
-};
+};  // null (with a warning) when n < 200 or r2 < 0.6
 type BrakeModel = {
   k: number; c: number; d: number;        // a[m/s²] = k·Iph + c + d·v², v in m/s (real)
-  residSd: number; n: number;
+  residSd: number; n: number; r2: number;
   vRef: number;                           // km/h real, for currentFor
-  currentFor: { g: number; brakeIph: number; accelIph: number }[];  // g = 0.3, 0.4, 0.5
-};
+  observedPeakBrakeG: number;             // max deceleration in the fit samples, g (positive)
+  observedMinIph: number;                 // most negative Iph of the ride, A
+  currentFor: { g: number; brakeIph: number; accelIph: number;  // g = 0.3, 0.4, 0.5
+                beyondObserved: boolean }[];  // |brakeIph| > |observedMinIph| or g > observedPeakBrakeG
+};  // null (with a warning) when n < 100 or r2 < 0.4
 type BatteryModel = { r: number; v0: number; residSd: number; n: number; rMeta: number|null };
+// null (with a warning) when r is outside 0.03–0.6 Ω or residSd > 1.5 V
 
 type ImpactCandidate = {
   i: number; t: number; speed: number; speedReal: number;
@@ -133,7 +146,8 @@ type Summary = {
   hardestBrakeId: number|null; hardestAccelId: number|null;   // by meanG
   iphMax: { value: number; t: number }; iphMin: { value: number; t: number };
   ibMax: { value: number; t: number };  ibMin: { value: number; t: number };
-  energyWh: number; whPerKm: number;
+  energyWh: number; whPerKm: number;     // whPerKm per wheel-odometer km
+  whPerKmReal: number;                    // per GPS km (fallback: wheel km / k)
   batteryStart: number; batteryEnd: number; batteryMin: { value: number; t: number };  // end = last logged value (at rest)
   voltageMin: { value: number; t: number }; voltageMax: number;
   tempMax: { temp: number; tempBatt: number; tempCpu: number; tempImu: number };
@@ -157,6 +171,7 @@ type Analysis = {
   markers: Marker[];
   summary: Summary;
   warnings: string[];                     // Polish caveats (e.g. "k z ustawień", "mało danych do modelu")
+  caveats: { tiltback: string; accel: string; stopping: string; brakeCurrent: string; impacts: string };  // Polish, for the UI
 };
 ```
 

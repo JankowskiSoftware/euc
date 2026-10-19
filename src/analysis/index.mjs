@@ -2,18 +2,23 @@
 import { DEFAULT_ANALYSIS_SETTINGS } from './defaults.mjs';
 import { createIngester, prepareRideFromRows } from './ingest.mjs';
 import { calibrate } from './calib.mjs';
-import { computeDerived } from './kinematics.mjs';
+import { computeDerived, accelStencil } from './kinematics.mjs';
 import { detectEvents } from './events.mjs';
 import {
-  fitMarginModel, fitBrakeModel, fitBatteryModel, batteryFlags, predictTiltbackSpeed, iphForG, R_FALLBACK,
+  fitMarginModel, fitBrakeModel, fitBatteryModel, batteryFlags, batteryModelOk, predictTiltbackSpeed, iphForG, R_FALLBACK,
 } from './models.mjs';
+import { buildCaveats } from './caveats.mjs';
+import { parseTimestamp } from './time.mjs';
 import { detectImpacts } from './impacts.mjs';
 import { ALARM_BITS, detectAlarmEpisodes, detectMarkers, alarmCounts } from './alarms.mjs';
 import { buildSummary } from './summary.mjs';
 
 export { createIngester, prepareRideFromRows, predictTiltbackSpeed, iphForG, ALARM_BITS };
 
-const MIN_MODEL_SAMPLES = 50;
+// Quality gates: below these the model is not shown (null + warning).
+const MARGIN_MIN_N = 200, MARGIN_MIN_R2 = 0.6;
+const BRAKE_MIN_N = 100, BRAKE_MIN_R2 = 0.4;
+const fmt = (x, d) => (Number.isFinite(x) ? x.toFixed(d).replace('.', ',') : '—');
 
 export function analyzeRide(ride, settings) {
   const s = { ...DEFAULT_ANALYSIS_SETTINGS, ...(settings || {}) };
@@ -23,7 +28,10 @@ export function analyzeRide(ride, settings) {
 
   const cal = calibrate(ride, s);
   if (cal.warning) warnings.push(cal.warning);
-  const derived = computeDerived(w, cal.k);
+  const stencil = accelStencil(w.t);
+  const derived = computeDerived(w, cal.k, stencil);
+  const ts = ride.startIso ? parseTimestamp(ride.startIso) : null;
+  if (ts && !ts.hasZone) warnings.push('Znaczniki czasu bez strefy czasowej — przyjęto UTC; godziny mogą być przesunięte.');
 
   const rMeta = ride.meta && isFinite(ride.meta.batteryCircuitResistance) && ride.meta.batteryCircuitResistance > 0
     ? ride.meta.batteryCircuitResistance : null;
@@ -33,21 +41,30 @@ export function analyzeRide(ride, settings) {
   const events = detectEvents(ride, derived, s);
 
   let marginModel = fitMarginModel(ride, s, cal.k, rInfo);
-  if (marginModel && marginModel.n < MIN_MODEL_SAMPLES) {
-    warnings.push(`Mało danych do modelu marginesu (${marginModel.n} próbek).`);
-  }
   if (!marginModel) warnings.push('Za mało danych do modelu marginesu bezpieczeństwa.');
-  let brakeModel = fitBrakeModel(ride, derived);
-  if (brakeModel && brakeModel.n < MIN_MODEL_SAMPLES) warnings.push(`Mało danych do modelu hamowania (${brakeModel.n} próbek).`);
+  else if (!(marginModel.n >= MARGIN_MIN_N && marginModel.r2 >= MARGIN_MIN_R2)) {
+    warnings.push(`Model marginesu ukryty: za mało danych lub słabe dopasowanie (n = ${marginModel.n}, r² = ${fmt(marginModel.r2, 2)}).`);
+    marginModel = null;
+  }
+  let brakeModel = fitBrakeModel(ride, derived, stencil);
   if (!brakeModel) warnings.push('Za mało danych do modelu siły hamowania.');
-  const batteryModel = fitBatteryModel(ride, rMeta);
+  else if (!(brakeModel.n >= BRAKE_MIN_N && brakeModel.r2 >= BRAKE_MIN_R2)) {
+    warnings.push(`Model hamowania ukryty: za mało danych lub słabe dopasowanie (n = ${brakeModel.n}, r² = ${fmt(brakeModel.r2, 2)}).`);
+    brakeModel = null;
+  }
+  let batteryModel = fitBatteryModel(ride, rMeta);
   if (!batteryModel) warnings.push('Za mało danych do modelu baterii.');
+  else if (!batteryModelOk(batteryModel)) {
+    warnings.push(`Model oporu baterii odrzucony (R = ${fmt(batteryModel.r, 3)} Ω, rozrzut ${fmt(batteryModel.residSd, 2)} V).`);
+    batteryModel = null;
+  }
 
   const impacts = detectImpacts(ride, derived, s);
   const alarms = detectAlarmEpisodes(w);
   const markers = detectMarkers(w);
-  const summary = buildSummary(ride, derived, events, alarmCounts(w, alarms), markers);
-  const flags = batteryFlags(ride, batteryModel, summary);
+  const summary = buildSummary(ride, derived, events, alarmCounts(w, alarms), markers, cal.k);
+  const flags = batteryFlags(ride, batteryModel, summary, events);
+  const caveats = buildCaveats(marginModel, brakeModel, summary, s);
 
   return {
     version: 1,
@@ -65,6 +82,7 @@ export function analyzeRide(ride, settings) {
     markers,
     summary,
     warnings,
+    caveats,
   };
 }
 

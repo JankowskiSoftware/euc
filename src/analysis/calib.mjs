@@ -39,7 +39,7 @@ export function calibrate(ride, settings) {
   const manual = settings && isFiniteNum(settings.speedK) && settings.speedK > 0;
   if (manual) return { k: settings.speedK, n: ratios.length, auto: false, warning: 'Współczynnik k prędkościomierza z ustawień (ręczny).' };
   if (ratios.length < CALIB_MIN_SAMPLES) {
-    return { k: 1, n: ratios.length, auto: true, warning: `Za mało danych GPS do kalibracji prędkościomierza (${ratios.length} próbek) — przyjęto k = 1.` };
+    return { k: 1, n: ratios.length, auto: true, warning: `Za mało danych GPS do kalibracji prędkościomierza (${ratios.length} próbek) — przyjęto k = 1; prędkości i opóźnienia mogą być zawyżone o ok. 5–10 % (na tym kole ok. 9 %).` };
   }
   return { k: median(ratios), n: ratios.length, auto: true, warning: null };
 }

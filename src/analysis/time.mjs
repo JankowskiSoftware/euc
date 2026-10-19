@@ -11,7 +11,8 @@ function num(s, a, b) {
 
 /**
  * Parse an ISO-like timestamp with optional fraction and optional zone (Z, +hh, +hhmm, +hh:mm).
- * @returns {{ms:number, tzOffsetMin:number}|null} epoch milliseconds (UTC) and zone offset in minutes.
+ * The fraction may use '.' or ','. Without a zone the time is read as UTC and hasZone is false.
+ * @returns {{ms:number, tzOffsetMin:number, hasZone:boolean}|null} epoch ms (UTC), zone offset in minutes.
  */
 export function parseTimestamp(s) {
   if (typeof s !== 'string' || s.length < 19) return null;
@@ -20,7 +21,8 @@ export function parseTimestamp(s) {
   if (!(y > 0 && mo >= 1 && mo <= 12)) return null;
   let i = 19;
   let frac = 0;
-  if (s.charCodeAt(i) === 46 /* . */) {
+  const sep = s.charCodeAt(i);
+  if (sep === 46 /* . */ || sep === 44 /* , */) {
     i++;
     let scale = 100;
     while (i < s.length) {
@@ -31,9 +33,11 @@ export function parseTimestamp(s) {
       i++;
     }
   }
-  let tz = 0;
+  let tz = 0, hasZone = false;
   const c = s.charAt(i);
-  if (c === '+' || c === '-') {
+  if (c === 'Z' || c === 'z') hasZone = true;
+  else if (c === '+' || c === '-') {
+    hasZone = true;
     const sign = c === '+' ? 1 : -1;
     const rest = s.slice(i + 1).replace(':', '');
     const th = num(rest, 0, 2);
@@ -41,7 +45,7 @@ export function parseTimestamp(s) {
     tz = sign * (th * 60 + tm);
   }
   const ms = Date.UTC(y, mo - 1, d, h, mi, se) + frac - tz * 60000;
-  return Number.isFinite(ms) ? { ms, tzOffsetMin: tz } : null;
+  return Number.isFinite(ms) ? { ms, tzOffsetMin: tz, hasZone } : null;
 }
 
 /** Epoch ms only; NaN on failure. */

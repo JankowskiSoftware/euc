@@ -16,7 +16,7 @@ function firstFinite(a) { for (let i = 0; i < a.length; i++) if (a[i] === a[i]) 
 function lastFinite(a) { for (let i = a.length - 1; i >= 0; i--) if (a[i] === a[i]) return a[i]; return NaN; }
 function maxOf(a) { let m = NaN; for (const v of a) if (v === v && !(v <= m)) m = v; return m; }
 
-export function buildSummary(ride, derived, events, counts, markers) {
+export function buildSummary(ride, derived, events, counts, markers, k = 1) {
   const w = ride.wheel, g = ride.gps, last = ride.last;
   const tEnd = w.n ? w.t[w.n - 1] : 0;
   const distW = isFiniteNum(last.distanceKm) ? last.distanceKm : lastFinite(w.distance);
@@ -46,6 +46,8 @@ export function buildSummary(ride, derived, events, counts, markers) {
     ibMin: vt(extreme(w.current, w.t, false)),
     energyWh,
     whPerKm: distW > 0 ? energyWh / distW : NaN,
+    // per real km: GPS distance, or wheel distance / k when there is no GPS distance
+    whPerKmReal: distG > 0 ? energyWh / distG : distW > 0 && k > 0 ? energyWh / (distW / k) : NaN,
     batteryStart: firstFinite(w.battery),
     batteryEnd: lastFinite(w.battery),
     batteryMin: vt(extreme(w.battery, w.t, false)),   // under load; end value is after voltage recovery
