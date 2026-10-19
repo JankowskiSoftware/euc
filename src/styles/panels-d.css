@@ -1,0 +1,22 @@
+/* Panels 3, 4, 6 (agent D). */
+.d-bar { display: flex; flex-wrap: wrap; gap: var(--gap); margin-bottom: var(--gap); }
+.d-timeline-chart { height: 360px; touch-action: pan-y; }
+.d-chart-tall { height: 340px; touch-action: pan-y; }
+.d-marker-chart { height: 230px; }
+.d-readout { margin-top: var(--gap); padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); min-height: 64px; }
+.d-readout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 12px; margin: 0; }
+.d-readout-grid dt { font-size: var(--fs-small); }
+.d-readout-grid dd { margin: 0; font-size: var(--fs-base); font-weight: 600; }
+.d-readout-grid > div:first-child { grid-column: 1 / -1; }
+.d-readout-alarm { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; border: 1px solid; }
+.d-readout p.muted { margin: 10px 0 0; }
+.d-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--gap); }
+.d-chip { min-height: var(--tap); cursor: pointer; }
+.d-marker-detail { margin-top: var(--gap); padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); display: grid; gap: var(--gap); }
+.d-text { margin-top: var(--gap); }
+.d-text h3 { font-size: var(--fs-base); margin: 14px 0 6px; }
+.d-text p { margin: 6px 0; }
+.d-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); margin: 6px 0; }
+.d-table th, .d-table td { border: 1px solid var(--border); padding: 6px 4px; text-align: right; }
+.d-table th:first-child { text-align: left; }
+.d-table thead th { background: var(--surface-2); }
