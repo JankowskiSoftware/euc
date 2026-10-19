@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>EUC Lynx S – analiza jazdy</title>
+<!-- build:css -->
+<link rel="stylesheet" href="../vendor/leaflet.css">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/panels-d.css">
+<link rel="stylesheet" href="styles/panels-e.css">
+<!-- /build:css -->
+</head>
+<body data-state="idle">
+<header id="app-header" class="app-header"></header>
+<main id="app">
+  <section id="p-file" class="panel"><h2>Wybór pliku</h2><div class="panel-body"></div></section>
+  <section id="p-summary" class="panel" hidden><h2>Podsumowanie</h2><div class="panel-body"></div></section>
+  <section id="p-timeline" class="panel" hidden><h2>Przebieg</h2><div class="panel-body"></div></section>
+  <section id="p-margin" class="panel" hidden><h2>Zapas vs prędkość</h2><div class="panel-body"></div></section>
+  <section id="p-events" class="panel" hidden><h2>Hamowania i przyspieszenia</h2><div class="panel-body"></div></section>
+  <section id="p-current" class="panel" hidden><h2>Prąd vs prędkość</h2><div class="panel-body"></div></section>
+  <section id="p-impacts" class="panel" hidden><h2>Uderzenia</h2><div class="panel-body"></div></section>
+  <section id="p-map" class="panel" hidden><h2>Trasa</h2><div class="panel-body"></div></section>
+  <details id="p-battery" class="panel" hidden><summary>Bateria</summary><div class="panel-body"></div></details>
+  <details id="p-settings" class="panel"><summary>Ustawienia</summary><div class="panel-body"></div></details>
+</main>
+<!-- build:vendor -->
+<script src="../vendor/echarts.min.js"></script>
+<script src="../vendor/papaparse.min.js"></script>
+<script src="../vendor/leaflet.js"></script>
+<!-- /build:vendor -->
+<!-- build:app -->
+<script type="module" src="main.mjs"></script>
+<!-- /build:app -->
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "euc-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline EUC World ride-log dashboard for Leaperkim Lynx S",
+  "scripts": {
+    "test": "node --test test/",
+    "build": "node build.mjs",
+    "serve": "http-server -p 8080 -c-1 .",
+    "longlog": "node scripts/make-long-log.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.2",
+    "playwright": "1.56.1"
+  }
+}

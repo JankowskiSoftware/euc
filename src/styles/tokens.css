@@ -1,0 +1,81 @@
+/* Design tokens. Light is default; dark follows the system setting.
+   A manual override can set <html data-theme="light|dark">. */
+:root {
+  color-scheme: light dark;
+  --font: system-ui, -apple-system, "Roboto", "Segoe UI", sans-serif;
+  --font-num: "Roboto Mono", ui-monospace, monospace;
+  --fs-base: 18px;
+  --fs-small: 15px;
+  --fs-large: 22px;
+  --fs-xl: 30px;
+  --tap: 48px;           /* minimum touch target */
+  --gap: 12px;
+  --pad: 16px;           /* page side gutter */
+  --radius: 12px;
+
+  --bg: #ffffff;
+  --surface: #f2f3f5;
+  --surface-2: #e3e6ea;
+  --text: #0b0c0e;
+  --text-muted: #3d434b;
+  --border: #9aa1ab;
+  --accent: #0047b3;
+  --accent-text: #ffffff;
+  --focus: #ff8a00;
+
+  --ok: #0a6b2c;   --ok-bg: #d3f2dc;
+  --warn: #7a5200; --warn-bg: #ffe8a3;
+  --bad: #b00020;  --bad-bg: #ffd6dc;
+
+  --series-wheel: #0047b3;
+  --series-real: #c2185b;
+  --series-margin: #0a6b2c;
+  --series-current: #d84315;
+  --series-battery: #6a1b9a;
+  --series-voltage: #00838f;
+  --series-gps: #546e7a;
+  --zone-ok: rgba(10,107,44,.10);
+  --zone-warn: rgba(230,160,0,.18);
+  --zone-bad: rgba(176,0,32,.16);
+  --band-alarm: rgba(176,0,32,.22);
+  --band-marker: rgba(0,71,179,.22);
+  --grid-line: #c9ced5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000;
+    --surface: #15181c;
+    --surface-2: #23272d;
+    --text: #f4f6f8;
+    --text-muted: #c3c9d1;
+    --border: #5c6470;
+    --accent: #7fb2ff;
+    --accent-text: #000000;
+    --ok: #5fe08a;   --ok-bg: #0d3a1d;
+    --warn: #ffd04d; --warn-bg: #3d2f00;
+    --bad: #ff7a8a;  --bad-bg: #4a0d16;
+    --series-wheel: #7fb2ff;
+    --series-real: #ff7ab0;
+    --series-margin: #5fe08a;
+    --series-current: #ffab70;
+    --series-battery: #d59cff;
+    --series-voltage: #5fe0e8;
+    --series-gps: #b0bec5;
+    --zone-ok: rgba(95,224,138,.12);
+    --zone-warn: rgba(255,208,77,.16);
+    --zone-bad: rgba(255,122,138,.18);
+    --band-alarm: rgba(255,122,138,.28);
+    --band-marker: rgba(127,178,255,.28);
+    --grid-line: #343a42;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #15181c; --surface-2: #23272d;
+  --text: #f4f6f8; --text-muted: #c3c9d1; --border: #5c6470;
+  --accent: #7fb2ff; --accent-text: #000000;
+  --ok: #5fe08a; --ok-bg: #0d3a1d; --warn: #ffd04d; --warn-bg: #3d2f00; --bad: #ff7a8a; --bad-bg: #4a0d16;
+  --series-wheel: #7fb2ff; --series-real: #ff7ab0; --series-margin: #5fe08a; --series-current: #ffab70;
+  --series-battery: #d59cff; --series-voltage: #5fe0e8; --series-gps: #b0bec5;
+  --zone-ok: rgba(95,224,138,.12); --zone-warn: rgba(255,208,77,.16); --zone-bad: rgba(255,122,138,.18);
+  --band-alarm: rgba(255,122,138,.28); --band-marker: rgba(127,178,255,.28); --grid-line: #343a42;
+}
