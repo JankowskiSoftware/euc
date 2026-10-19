@@ -1,5 +1,5 @@
 // EUC dashboard service worker (placeholders substituted by build.mjs).
-const VERSION = '07077d39c7d8';
+const VERSION = '25a5765f37b0';
 const SHELL = `euc-shell-${VERSION}`;
 const TILES = 'euc-tiles';
 const SHARED = 'euc-shared';

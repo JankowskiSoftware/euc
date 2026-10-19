@@ -16,8 +16,18 @@ multipart/form-data to `./share-target`; the SW stores the file in cache `euc-sh
 in `x-filename`) and answers 303 to `./?shared=1`. The page then waits for `euc-ready`, reads the cached file,
 calls `window.eucApp.loadFile(...)`, deletes the entry and cleans the URL.
 
-Service workers, installation and share target require HTTPS (or localhost). Hosting (e.g. GitHub Pages: publish
-the contents of `dist/pwa/`) is not set up. Local test: `npx http-server -p 8084 -c-1 dist/pwa`.
+Service workers, installation and share target require HTTPS (or localhost). Local test:
+`npx http-server -p 8084 -c-1 dist/pwa`.
+
+The PWA ships without the embedded sample ride, because it is meant for public hosting and the sample holds
+a real GPS track; the "Przykład" button is hidden there. The single file keeps the sample.
+
+## GitHub Pages
+`.github/workflows/pages.yml` runs the tests, builds, and deploys `dist/pwa` on every push to `main` (or on a
+manual run). One-time setup in the repository: Settings → Pages → Source: "GitHub Actions". A Pages site is
+public even when the repository is private, and Pages on a private repository needs a paid GitHub plan.
+After the first deploy, open `https://jankowskisoftware.github.io/euc/` in Chrome on Android, choose
+"Zainstaluj aplikację" from the menu, and the app then appears in the Android share sheet for CSV files.
 
 ## Single file on Android
 Copy `euc-dashboard.html` to the phone and open it from a file manager with Chrome, or enter

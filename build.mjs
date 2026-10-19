@@ -32,9 +32,10 @@ try {
   sample = `<script>globalThis.__EUC_SAMPLE_GZ_B64__="${gz.toString('base64')}"</script>\n`;
 } catch { console.warn('no data/sample.csv'); }
 
-html = html.replace(cssBlock, () => `<style>\n${css}\n</style>`)
-  .replace(vendorBlock, () => vendor)
-  .replace(block('app'), () => `${sample}<script>${app}</script>`);
+const shell = html.replace(cssBlock, () => `<style>\n${css}\n</style>`).replace(vendorBlock, () => vendor);
+html = shell.replace(block('app'), () => `${sample}<script>${app}</script>`);
+// The PWA is meant for public hosting, so it ships without the sample ride (GPS track of a real commute).
+const pwaBase = shell.replace(block('app'), () => `<script>globalThis.__EUC_NO_SAMPLE__=true</script>\n<script>${app}</script>`);
 
 fs.mkdirSync(path.join(root, 'dist/pwa'), { recursive: true });
 const single = path.join(root, 'dist/euc-dashboard.html');
@@ -49,10 +50,10 @@ const head = `<link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EUC">
 </head>`;
-const hi = html.indexOf('</head>');            // first </head> is the real one (vendor code comes later)
-const bi = html.lastIndexOf('</body>');
-const pwaHtml = html.slice(0, hi) + head + html.slice(hi + 7, bi)
-  + `<script>\n${rd('src/pwa/page.js')}</script>\n` + html.slice(bi);
+const hi = pwaBase.indexOf('</head>');          // first </head> is the real one (vendor code comes later)
+const bi = pwaBase.lastIndexOf('</body>');
+const pwaHtml = pwaBase.slice(0, hi) + head + pwaBase.slice(hi + 7, bi)
+  + `<script>\n${rd('src/pwa/page.js')}</script>\n` + pwaBase.slice(bi);
 fs.writeFileSync(path.join(pwaDir, 'index.html'), pwaHtml);
 
 const icons = { 'icon-192.png': renderIcon(192), 'icon-512.png': renderIcon(512), 'icon-maskable-512.png': renderIcon(512, true) };

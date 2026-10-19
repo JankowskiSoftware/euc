@@ -25,6 +25,7 @@ export function mount(root, ctx) {
     if (f) ctx.loadFile(f);
     input.value = '';
   });
+  if (globalThis.__EUC_NO_SAMPLE__) $('.file-sample').hidden = true;
   $('.file-sample').addEventListener('click', () => ctx.loadSample());
 
   function render() {
