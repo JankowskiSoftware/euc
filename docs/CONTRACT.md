@@ -241,5 +241,10 @@ init until visible (IntersectionObserver), but must render when scrolled to or w
 
 ## UI language
 
-All visible text Polish. Acceleration peaks are lower bounds: show as "co najmniej 0,42 g".
-Model predictions are extrapolations: label "ekstrapolacja modelu".
+All visible text Polish. Acceleration values come from a ≥1 s difference stencil and underestimate short
+spikes: show peaks as "szczyt ≥ 0,31 g (średnia z ≥1 s)", never as the wheel's or tyre's capability.
+Model predictions are extrapolations: label "ekstrapolacja modelu"; render `outOfData` predictions,
+`beyondObserved` brake currents and `stop.extrapolated` distances visibly de-emphasised with a text cue
+("poza zakresem jazdy"), and show `band` as a range. Show `analysis.caveats.*` next to the matching panel
+(tiltback → panel 4, accel+stopping → panel 5, brakeCurrent → panel 6, impacts → panel 7).
+Status must never rely on colour alone; pair colour with a word or symbol.
