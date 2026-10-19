@@ -62,3 +62,10 @@ Budget 3000 ms: marks median passes narrowly (one run 3002), wall-clock median f
 3. Dark-theme attribution link contrast 3,23:1: override `.leaflet-control-attribution a` colour with a token (panels-e.css).
 4. Header subtitle and file name are truncated; consider `white-space:normal` / wrapping so the ride date and wheel remain readable (`src/styles/app.css` lines 9-22).
 5. Panel 3 shows an empty 230 px marker chart when there are no markers; hide `.d-marker-chart` when `analysis.markers` is empty (`src/panels/p03-timeline.mjs` marker code).
+
+## Re-verification after fix rounds (orchestrator, `node test/e2e/verify.mjs`)
+
+Both themes: 0 page errors, 0 console errors, no horizontal scroll, no touch targets under 44 px,
+no contrast failures. The only overflow entries are Leaflet's own clipped map tiles (expected).
+Performance on the 2-hour log at 4× CPU throttle: 2166 / 1816 / 2042 ms from file selection to ready
+(median 2042 ms, budget 3000 ms); sample via "Przykład" 1083 ms. `npm test`: 35/35 pass.

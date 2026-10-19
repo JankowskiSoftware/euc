@@ -24,8 +24,8 @@ export function buildTimelineOption(analysis, settings, c, pan) {
   let mMin = 0;
   for (const v of w.safetyMargin) if (Number.isFinite(v) && v < mMin) mMin = v;
   mMin = Math.floor(mMin / 10) * 10;
-  const line = (name, data, color, extra) => ({
-    name, type: 'line', data, showSymbol: false, sampling: 'lttb', color, lineStyle: { width: 1.6, color }, silent: true, ...extra,
+  const line = (name, y, color, extra) => ({
+    name, type: 'line', datasetIndex: 0, encode: { x: 't', y }, showSymbol: false, sampling: 'lttb', color, lineStyle: { width: 1.6, color }, silent: true, ...extra,
   });
   const cursor = (id, gi) => ({
     id, type: 'line', xAxisIndex: gi, yAxisIndex: gi, data: [], silent: true,
@@ -40,6 +40,7 @@ export function buildTimelineOption(analysis, settings, c, pan) {
   return {
     ...baseOption(c),
     legend: { ...baseOption(c).legend, top: 0, left: 4, itemGap: 14, data: ['Prędkość koła', 'Prędkość rzeczywista'], textStyle: { color: c.text, fontSize: 13 } },
+    dataset: [{ source: { t: w.t, speed: w.speed, real: analysis.derived.speedReal, margin: w.safetyMargin }, dimensions: ['t', 'speed', 'real', 'margin'] }],
     tooltip: { show: false },
     axisPointer: { show: false },
     grid: [{ left: 48, right: 10, top: 52, height: 104 }, { left: 48, right: 10, top: 198, height: 82 }],
@@ -54,9 +55,9 @@ export function buildTimelineOption(analysis, settings, c, pan) {
         borderColor: c.border, fillerColor: c.bandMarker, textStyle: { color: c.text }, dataBackground: { lineStyle: { color: c.border }, areaStyle: { color: c.grid } } },
     ],
     series: [
-      line('Prędkość koła', pairs(w.t, w.speed), c.wheel, { xAxisIndex: 0, yAxisIndex: 0, markArea: { silent: true, data: bands } }),
-      line('Prędkość rzeczywista', pairs(w.t, analysis.derived.speedReal), c.real, { xAxisIndex: 0, yAxisIndex: 0, lineStyle: { width: 1.6, color: c.real, type: 'dashed' } }),
-      line('Zapas bezpieczeństwa', pairs(w.t, w.safetyMargin), c.margin, {
+      line('Prędkość koła', 'speed', c.wheel, { xAxisIndex: 0, yAxisIndex: 0, markArea: { silent: true, data: bands } }),
+      line('Prędkość rzeczywista', 'real', c.real, { xAxisIndex: 0, yAxisIndex: 0, lineStyle: { width: 1.6, color: c.real, type: 'dashed' } }),
+      line('Zapas bezpieczeństwa', 'margin', c.margin, {
         xAxisIndex: 1, yAxisIndex: 1,
         markArea: { silent: true, data: [zone(marginOk, 100, c.zoneOk), zone(marginBad, marginOk, c.zoneWarn), zone(mMin, marginBad, c.zoneBad), ...bands] },
       }),

@@ -24,42 +24,59 @@ export function loadFile(file, store) {
       fail(store, msg);
       resolve();
     };
-    Papa.parse(file, {
-      chunkSize: 512 * 1024,
-      skipEmptyLines: true,
-      chunk(results, parser) {
-        if (aborted) return;
-        let rows = results.data;
-        try {
-          if (!ingester) {
-            const header = rows[0].map((h) => String(h).replace(/^﻿/, '').trim());
-            const missing = REQUIRED.filter((c) => !header.includes(c));
-            if (missing.length) {
-              return abort(`To nie wygląda na log EUC World: brak kolumn ${missing.join(', ')}.`, parser);
-            }
-            ingester = createIngester(header);
-            rows = rows.slice(1);
+    const feed = (rows) => {
+      if (!ingester) {
+        if (!rows.length) return;
+        const header = rows[0].map((h) => String(h).replace(/^\uFEFF/, '').trim());
+        const missing = REQUIRED.filter((c) => !header.includes(c));
+        if (missing.length) throw new Error(`MISSING:${missing.join(', ')}`);
+        ingester = createIngester(header);
+        rows = rows.slice(1);
+      }
+      ingester.pushRows(rows);
+    };
+    const finish = () => {
+      if (!ingester) return abort('Plik jest pusty.', null);
+      try {
+        const ride = ingester.finish();
+        if (!ride.wheel.n) return abort('Plik nie zawiera próbek z koła.', null);
+        store.set({ progress: 1, fileName, error: null, status: 'analysing', ride });
+      } catch (e) {
+        return abort(`Błąd wczytywania pliku: ${e.message}`, null);
+      }
+      resolve();
+    };
+    const fail2 = (e) => {
+      const m = /^MISSING:(.*)$/.exec(e.message);
+      abort(m ? `To nie wygląda na log EUC World: brak kolumn ${m[1]}.` : `Błąd wczytywania pliku: ${e.message}`, null);
+    };
+    // Fast path: files without quotes are split on newline/comma (identical result to PapaParse);
+    // quoted files fall back to PapaParse on the whole text.
+    file.text().then(async (text) => {
+      try {
+        if (text.indexOf('"') >= 0) {
+          const res = Papa.parse(text, { skipEmptyLines: true });
+          feed(res.data);
+          return finish();
+        }
+        const BLOCK = 8000;
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i += BLOCK) {
+          const rows = [];
+          const end = Math.min(lines.length, i + BLOCK);
+          for (let k = i; k < end; k++) {
+            let ln = lines[k];
+            if (ln.charCodeAt(ln.length - 1) === 13) ln = ln.slice(0, -1);
+            if (ln === '') continue;
+            rows.push(ln.split(','));
           }
-          ingester.pushRows(rows);
-        } catch (e) {
-          return abort(`Błąd wczytywania pliku: ${e.message}`, parser);
+          feed(rows);
+          store.set({ progress: Math.min(1, end / lines.length) });
+          if (end < lines.length) await new Promise((r) => setTimeout(r, 0));
         }
-        store.set({ progress: Math.min(1, results.meta.cursor / size) });
-      },
-      complete() {
-        if (aborted) return;
-        if (!ingester) return abort('Plik jest pusty.', null);
-        try {
-          const ride = ingester.finish();
-          if (!ride.wheel.n) return abort('Plik nie zawiera próbek z koła.', null);
-          store.set({ progress: 1, fileName, error: null, status: 'analysing', ride });
-        } catch (e) {
-          return abort(`Błąd wczytywania pliku: ${e.message}`, null);
-        }
-        resolve();
-      },
-      error(err) { abort(`Nie można odczytać pliku: ${err.message || err}`, null); },
-    });
+        finish();
+      } catch (e) { fail2(e); }
+    }, (err) => abort(`Nie można odczytać pliku: ${err.message || err}`, null));
   });
 }
 
