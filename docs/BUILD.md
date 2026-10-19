@@ -23,7 +23,7 @@ The PWA ships without the embedded sample ride, because it is meant for public h
 a real GPS track; the "Przykład" button is hidden there. The single file keeps the sample.
 
 ## GitHub Pages
-`.github/workflows/pages.yml` runs the tests, builds, and deploys `dist/pwa` on every push to `main` (or on a
+`.github/workflows/pages.yml` runs the tests, builds, and deploys `dist/pwa` on every push to `main` or the current working branch (or on a
 manual run). One-time setup in the repository: Settings → Pages → Source: "GitHub Actions". A Pages site is
 public even when the repository is private, and Pages on a private repository needs a paid GitHub plan.
 After the first deploy, open `https://jankowskisoftware.github.io/euc/` in Chrome on Android, choose
