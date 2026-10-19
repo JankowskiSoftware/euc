@@ -6,7 +6,7 @@ export const DEFAULT_ANALYSIS_SETTINGS = Object.freeze({
   eventMinDur: 1.0,      // s
   eventMergeGap: 0.7,    // s; gaps shorter than this are merged
   reactionTime: 1.0,     // s, added to projected stopping distance
-  impactIphDev: 25,      // A deviation of Iph from 5-sample rolling median (tuned on sample)
+  impactIphDev: 45,      // A; Iph spike vs 5-sample rolling median and both neighbours (tuned on sample)
   impactTiltJump: 1.5,   // deg per wheel sample
   impactMinSpeed: 8,     // km/h, wheel speed
   curveIph: 40,          // A, phase current used for the three prediction curves in panel 4

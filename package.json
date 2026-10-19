@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Offline EUC World ride-log dashboard for Leaperkim Lynx S",
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test \"test/**/*.test.mjs\"",
     "build": "node build.mjs",
     "serve": "http-server -p 8080 -c-1 .",
     "longlog": "node scripts/make-long-log.mjs"

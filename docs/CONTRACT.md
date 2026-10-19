@@ -85,7 +85,7 @@ type RideEvent = {
   tStart: number; tEnd: number; duration: number;
   vStart: number; vEnd: number;           // real km/h
   vStartWheel: number; vEndWheel: number; // wheel km/h
-  meanG: number;                          // |Δv/Δt| / 9.81, positive
+  meanG: number;                          // |Δv/Δt| / 9.81 over [i0,i1] incl. one sample before/after, positive
   peakG: number;                          // max |accelG| in event, positive (lower bound)
   distanceM: number;
   peakIph: number;                        // signed extreme in the event's direction
@@ -134,7 +134,7 @@ type Summary = {
   iphMax: { value: number; t: number }; iphMin: { value: number; t: number };
   ibMax: { value: number; t: number };  ibMin: { value: number; t: number };
   energyWh: number; whPerKm: number;
-  batteryStart: number; batteryEnd: number;
+  batteryStart: number; batteryEnd: number; batteryMin: { value: number; t: number };  // end = last logged value (at rest)
   voltageMin: { value: number; t: number }; voltageMax: number;
   tempMax: { temp: number; tempBatt: number; tempCpu: number; tempImu: number };
   alarmCounts: { bit: number; key: string; label: string; episodes: number; samples: number }[];
