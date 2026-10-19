@@ -6,8 +6,8 @@
   padding: 8px var(--pad); padding-top: max(8px, env(safe-area-inset-top)); min-height: 56px;
 }
 .hdr-main { display: flex; flex-direction: column; min-width: 0; }
-.hdr-title { font-size: var(--fs-base); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hdr-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdr-title { font-size: var(--fs-base); overflow-wrap: anywhere; line-height: 1.2; }
+.hdr-sub { overflow-wrap: anywhere; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hdr-status { flex: none; font-weight: 700; }
 
 .file-full { display: flex; flex-direction: column; gap: var(--gap); }
@@ -19,7 +19,7 @@
 .progress-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 .file-error { padding: 10px 12px; border: 2px solid var(--bad); border-radius: var(--radius); margin: 0; font-weight: 600; }
 .file-compact { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); }
-.file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; min-width: 0; }
+.file-name { overflow-wrap: anywhere; font-weight: 600; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .file-compact .btn { flex: none; }
 .file-full p { margin: 0; }
 #p-file:has(.file-compact:not([hidden])) { padding-top: 8px; padding-bottom: 8px; }
@@ -40,7 +40,13 @@ button.tile { cursor: pointer; min-height: var(--tap); }
 .tile-unit { font-size: var(--fs-small); font-weight: 600; }
 .tile-sub { line-height: 1.3; opacity: .95; }
 .tile.status-none { background: var(--surface); }
+.tile-sub small, .tile-sub .tile-dim { opacity: .8; font-size: 13px; }
+.tile.status-warn .tile-sub b { font-weight: 700; }
 .notes { margin: var(--gap) 0 0; padding-left: 20px; }
+.warnbox { margin: var(--gap) 0 0; padding: 10px 12px; border: 2px solid var(--warn); background: var(--warn-bg); border-radius: var(--radius); }
+.warnbox-title { font-weight: 700; margin: 0 0 4px; }
+.warnbox ul { margin: 0; padding-left: 20px; }
+.warnbox li { margin: 2px 0; }
 
 .settings-form { display: flex; flex-direction: column; gap: 14px; }
 .field { display: flex; flex-direction: column; gap: 4px; }

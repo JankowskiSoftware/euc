@@ -16,12 +16,21 @@ function tile({ label, value, unit = '', sub = '', status = 'none', id = '', but
     <span class="tile-sub small">${sub}</span></${end}>`;
 }
 
+function tiltTile(a, s) {
+  const m = a.marginModel;
+  if (!m) return tile({ label: 'Tiltback (model)', value: DASH, sub: 'brak modelu: za mało danych' });
+  const tb = m.tiltbackSpeedAtMedian, w = m.worstCase;
+  const warn = isNum(w.speedWheel) && isNum(s.maxSpeedWheel.value) && w.speedWheel < s.maxSpeedWheel.value;
+  return tile({ label: 'Tiltback (model)', value: fmt(tb.speedWheel, 0), unit: 'km/h koło', status: warn ? 'warn' : 'none',
+    sub: `<span class="tile-dim">realna ${fmt(tb.speedReal, 0)} km/h; ekstrapolacja modelu</span><br>najgorszy wariant: ${fmt(w.speedWheel, 0)} km/h koło (${fmt(w.vRest, 0)} V, ${fmt(w.iph, 0)} A fazowego), ekstrapolacja modelu${warn ? '<br><b>UWAGA: w najgorszym wariancie tiltback poniżej Twojej Vmax</b>' : ''}` });
+}
+
 function build(a, st) {
   const s = a.summary, r = a.ride, ev = a.events;
   const clock = (t) => fmtClock(r, t);
   const brake = ev.find((e) => e.id === s.hardestBrakeId);
   const accel = ev.find((e) => e.id === s.hardestAccelId);
-  const evSub = (e) => (e ? `szczyt co najmniej ${fmt(e.peakG, 2)} g<br>${clock(e.tStart)}, ${fmt(e.vStart, 0)} → ${fmt(e.vEnd, 0)} km/h` : '');
+  const evSub = (e) => (e ? `szczyt ≥ ${fmt(e.peakG, 2)} g (średnia z ≥1 s)<br>${clock(e.tStart)}, ${fmt(e.vStart, 0)} → ${fmt(e.vEnd, 0)} km/h` : '');
   const marginSt = !isNum(s.minMargin.value) ? 'none' : s.minMargin.value > st.marginOk ? 'ok' : s.minMargin.value < st.marginBad ? 'bad' : 'warn';
   const tmax = Math.max(...[s.tempMax.temp, s.tempMax.tempBatt, s.tempMax.tempCpu, s.tempMax.tempImu].filter(isNum));
   const tempSt = isNum(tmax) ? high(tmax, st.tempWarn, st.tempBad) : 'none';
@@ -44,7 +53,8 @@ function build(a, st) {
   t.push(tile({ label: 'Najmocniejsze przyspieszenie', value: accel ? fmt(accel.meanG, 2) : DASH, unit: 'g', sub: evSub(accel) }));
   t.push(tile({ label: 'Prąd fazowy', value: fmt(s.iphMax.value, 0), unit: 'A', sub: `max; min: ${fmt(s.iphMin.value, 0)} A` }));
   t.push(tile({ label: 'Prąd baterii', value: fmt(s.ibMax.value, 0), unit: 'A', sub: `max; min (regeneracja): ${fmt(s.ibMin.value, 0)} A` }));
-  t.push(tile({ label: 'Energia', value: fmt(s.energyWh, 0), unit: 'Wh', sub: `${fmt(s.whPerKm, 1)} Wh/km` }));
+  t.push(tile({ label: 'Energia', value: fmt(s.energyWh, 0), unit: 'Wh', sub: `${fmt(s.whPerKm, 1)} Wh/km (licznik koła)<br>${fmt(s.whPerKmReal, 1)} Wh/km na km GPS` }));
+  t.push(tiltTile(a, s));
   t.push(tile({ label: 'Bateria', value: `${fmt(s.batteryStart, 0)} → ${fmt(s.batteryEnd, 0)}`, unit: '%', status: batSt,
     sub: `min. pod obciążeniem: ${fmt(s.batteryMin.value, 0)} %` }));
   t.push(tile({ label: 'Napięcie min.', value: fmt(s.voltageMin.value, 1), unit: 'V', status: voltSt,
@@ -65,7 +75,7 @@ export function mount(root, ctx) {
     const { analysis: a, settings } = store.get();
     if (!a) { root.innerHTML = ''; return; }
     const notes = (a.warnings || []).map((w) => `<li>${esc(w)}</li>`).join('');
-    root.innerHTML = `<div class="tiles">${build(a, settings)}</div>${notes ? `<ul class="notes note">${notes}</ul>` : ''}`;
+    root.innerHTML = `<div class="tiles">${build(a, settings)}</div>${notes ? `<div class="warnbox" role="note"><p class="warnbox-title">UWAGA: zastrzeżenia do analizy</p><ul>${notes}</ul></div>` : ''}`;
   }
   root.addEventListener('click', (e) => {
     if (!e.target.closest('[data-tile="margin"]')) return;
