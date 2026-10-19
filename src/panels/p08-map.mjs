@@ -11,7 +11,9 @@ export function mount(root, ctx) {
   const netNote = h('p', { class: 'note', hidden: true }, 'Brak sieci – sam kształt trasy');
   const noGps = h('p', { class: 'empty', hidden: true }, 'Brak danych GPS w tym pliku.');
   const legend = h('div', { class: 'e-legend' });
-  root.append(noGps, mapEl, netNote, legend);
+  const credit = h('p', { class: 'note e-credit' }, 'Mapa: ',
+    h('a', { class: 'e-credit-link', href: 'https://www.openstreetmap.org/copyright', target: '_blank', rel: 'noopener' }, '© autorzy OpenStreetMap'));
+  root.append(noGps, mapEl, credit, netNote, legend);
 
   let map = null, layer = null, tiles = null, bounds = null, visible = false, wanted = false;
 
@@ -20,7 +22,7 @@ export function mount(root, ctx) {
     const online = navigator.onLine;
     netNote.hidden = online;
     if (online && !tiles) {
-      tiles = L.tileLayer(TILES, { maxZoom: 19, attribution: '© OpenStreetMap' });
+      tiles = L.tileLayer(TILES, { maxZoom: 19 });
       tiles.addTo(map);
     } else if (!online && tiles) { map.removeLayer(tiles); tiles = null; }
   }
@@ -38,7 +40,7 @@ export function mount(root, ctx) {
     mapEl.hidden = legend.hidden = !has.length;
     if (!has.length) return;
     if (!map) {
-      map = L.map(mapEl, { preferCanvas: true, zoomControl: true, attributionControl: true });
+      map = L.map(mapEl, { preferCanvas: true, zoomControl: true, attributionControl: false });
       map.setView([has.length ? w.lat[has[0]] : 0, w.lon[has[0]]], 15);
     }
     syncTiles();

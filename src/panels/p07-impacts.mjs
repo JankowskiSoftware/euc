@@ -10,6 +10,7 @@ export function mount(root, ctx) {
     root.replaceChildren();
     if (!a) return;
     root.append(h('p', { class: 'note' }, 'To kandydaci wywnioskowani ze skoków prądu i pochylenia – koło nie ma akcelerometru, więc nie jest to pewne wykrycie uderzenia.'));
+    if (a.caveats && a.caveats.impacts) root.append(h('p', { class: 'note' }, a.caveats.impacts));
     if (!a.impacts.length) { root.append(h('p', { class: 'empty' }, 'Nie wykryto kandydatów na uderzenia.')); return; }
     const ul = h('ul', { class: 'list' });
     for (const im of a.impacts) {

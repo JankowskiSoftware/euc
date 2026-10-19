@@ -35,3 +35,7 @@
 /* panel 9 */
 #p-battery .e-flags { margin: 0 0 var(--gap); padding-left: 20px; color: var(--bad); font-weight: 600; }
 #p-battery .e-stats { display: grid; grid-template-columns: 1fr; gap: 2px; margin: var(--gap) 0; }
+.e-warn { color: var(--text); border-left: 4px solid var(--warn); padding-left: 8px; margin: 4px 0; }
+/* panel 8: touch targets and credit */
+.leaflet-touch .leaflet-bar a, .leaflet-bar a { width: var(--tap); height: var(--tap); line-height: var(--tap); font-size: 22px; }
+.e-credit-link { display: inline-flex; align-items: center; min-height: var(--tap); min-width: var(--tap); padding: 0 8px; color: var(--accent); text-decoration: underline; }
