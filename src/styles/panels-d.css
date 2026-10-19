@@ -20,3 +20,11 @@
 .d-table th, .d-table td { border: 1px solid var(--border); padding: 6px 4px; text-align: right; }
 .d-table th:first-child { text-align: left; }
 .d-table thead th { background: var(--surface-2); }
+
+.d-markers[hidden], .d-marker-detail[hidden] { display: none; }
+.d-warn { margin: 10px 0; padding: 10px 12px; border: 2px solid var(--bad); background: var(--bad-bg); border-radius: var(--radius); font-weight: 600; }
+.d-worst { margin: 10px 0; padding: 10px 12px; border: 2px solid var(--text); border-radius: var(--radius); background: var(--surface); }
+.d-worst strong { font-size: var(--fs-large); }
+.d-out { opacity: 0.7; font-style: italic; }
+.d-sub { display: block; font-size: 12px; font-weight: 400; color: var(--text-muted); }
+.d-table td.d-out .d-sub { color: var(--text); }

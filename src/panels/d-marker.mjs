@@ -51,7 +51,8 @@ export function createMarkers(root, onOpen) {
     render(a) {
       analysis = a; current = -1; detail.hidden = true;
       chips.replaceChildren();
-      if (!a.markers.length) { chips.append(h('p', 'note', 'Brak znaczników w tym logu.')); return; }
+      wrap.hidden = !a.markers.length;   // no markers: hide the whole chip/detail area
+      if (!a.markers.length) return;
       a.markers.forEach((m, k) => {
         const b = h('button', 'chip d-chip', `Znacznik ${fmtClock(a.ride, m.t)}`); b.type = 'button';
         b.onclick = () => open(k);
